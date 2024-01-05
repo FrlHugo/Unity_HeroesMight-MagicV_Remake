@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Town : MonoBehaviour
 {
+
+    public Texture2D imageUI;
+
     // Start is called before the first frame update
     void Start()
     {

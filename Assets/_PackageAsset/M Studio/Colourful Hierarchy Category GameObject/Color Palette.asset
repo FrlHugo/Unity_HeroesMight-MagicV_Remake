@@ -13,33 +13,38 @@ MonoBehaviour:
   m_Name: Color Palette
   m_EditorClassIdentifier: 
   colorDesigns:
-  - keyChar: //
+  - keyChar: RED/
     textColor: {r: 1, g: 1, b: 1, a: 1}
-    backgroundColor: {r: 0.3962264, g: 0.039248843, b: 0.37169734, a: 1}
+    backgroundColor: {r: 0.7830189, g: 0.077285476, b: 0.05540227, a: 1}
     textAlignment: 4
     fontStyle: 3
-  - keyChar: ///
+  - keyChar: BLU/
     textColor: {r: 1, g: 1, b: 1, a: 1}
     backgroundColor: {r: 0, g: 0.6152477, b: 1, a: 1}
     textAlignment: 4
     fontStyle: 1
-  - keyChar: '#'
+  - keyChar: BLA/
     textColor: {r: 1, g: 1, b: 1, a: 1}
     backgroundColor: {r: 0.09558559, g: 0.11320752, b: 0.11178966, a: 1}
     textAlignment: 4
     fontStyle: 1
-  - keyChar: '@'
+  - keyChar: YEL/
     textColor: {r: 1, g: 1, b: 1, a: 1}
     backgroundColor: {r: 0.7264151, g: 0.59002787, b: 0.119927004, a: 1}
     textAlignment: 4
     fontStyle: 1
-  - keyChar: $
+  - keyChar: PUR/
     textColor: {r: 1, g: 1, b: 1, a: 1}
     backgroundColor: {r: 0.5903926, g: 0.12967247, b: 0.8867924, a: 1}
     textAlignment: 4
     fontStyle: 0
-  - keyChar: --
+  - keyChar: GRE/
     textColor: {r: 1, g: 1, b: 1, a: 1}
     backgroundColor: {r: 0.063412234, g: 0.5377358, b: 0.15035711, a: 1}
+    textAlignment: 4
+    fontStyle: 0
+  - keyChar: WHI/
+    textColor: {r: 0, g: 0, b: 0, a: 1}
+    backgroundColor: {r: 1, g: 1, b: 1, a: 1}
     textAlignment: 4
     fontStyle: 0
