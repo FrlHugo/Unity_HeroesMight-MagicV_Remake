@@ -35,7 +35,7 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        CameraMouvement();
+        
     } 
 
 
@@ -55,39 +55,4 @@ public class Player : MonoBehaviour
         selectedUnit = null;
     }
 
-
-
-    public void CameraMouvement()
-    {
-        Vector3 pos = Camera.transform.position;
-
-        if(Input.GetKeyDown(KeyCode.Z) || Input.mousePosition.y >= Screen.height - mouseMouvementBorderthickness)
-        {
-            pos.z += cameraSpeed * Time.deltaTime;
-        }
-        if (Input.GetKeyDown(KeyCode.S) || Input.mousePosition.y >=  mouseMouvementBorderthickness)
-        {
-            pos.z -= cameraSpeed * Time.deltaTime;
-        }
-        if (Input.GetKeyDown(KeyCode.Q) || Input.mousePosition.x >=  mouseMouvementBorderthickness)
-        {
-            pos.x -= cameraSpeed * Time.deltaTime;
-        }
-        if (Input.GetKeyDown(KeyCode.D) || Input.mousePosition.x >= Screen.width - mouseMouvementBorderthickness)
-        {
-            pos.x += cameraSpeed * Time.deltaTime;
-        }
-
-
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-
-        pos.y += scroll * scrollSpeed * 100f * Time.deltaTime;
-
-        //pos.x = Mathf.Clamp(pos.x, -distanceLimit.x, distanceLimit.x);
-
-        //pos.z = Mathf.Clamp(pos.z, -distanceLimit.y, distanceLimit.y);
-
-
-        Camera.transform.position = pos;
-    }
 }
