@@ -30,6 +30,7 @@ public class UI_Ressources : MonoBehaviour
         localPlayer = GameObject.FindGameObjectsWithTag("Player_Team1")[0];
 
         localPlayer.GetComponent<Player>().UI_Ressources = this;
+
         UpdateUI();
     }
 

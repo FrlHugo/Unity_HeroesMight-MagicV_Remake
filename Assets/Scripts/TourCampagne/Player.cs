@@ -5,28 +5,24 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [Header("Camera Settings")]
-    [Space(10)]
-
-    public float cameraSpeed = 20f;
-    public float mouseMouvementBorderthickness = 10f;
-    public Vector2 distanceLimit;
-    public float scrollSpeed;
-    public GameObject Camera;
-
-    [Space(20)]
     [Header("In Game")]
     [Space(10)]
 
-    public List<Army> listArmy = new List<Army>();
-    public List<Town> listTown = new List<Town>();
-    public EnumTeam team;
+    public GameObject UI_HB_ListArmy;
+    public GameObject UI_HB_ListTown;
+
+    [Space(5)]
+
+    public List<GameObject> listArmy = new List<GameObject>();
+    public List<GameObject> listTown = new List<GameObject>();
+
+    public listTeam team = listTeam.None;
     private Army selectedUnit = null;
 
-    [Space(20)]
-
+    [Space(10)]
     [Header("Ressources of the player")]
-    [Space(10)] 
+    [Space(5)] 
+
     public int gold = 1000;
     public int wood = 1000;
     public int ore = 1000;
@@ -36,7 +32,7 @@ public class Player : MonoBehaviour
     public int mercury = 1000;
 
     public UI_Ressources UI_Ressources = null;
-   
+
 
     // Start is called before the first frame update
     void Start()

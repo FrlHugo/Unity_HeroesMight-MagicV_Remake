@@ -6,6 +6,8 @@ TagManager:
   tags:
   - Player_Team1
   - Player_Team2
+  - UI_HB_ListArmy
+  - UI_HB_ListTown
   layers:
   - Default
   - TransparentFX
@@ -17,7 +19,7 @@ TagManager:
   - Town
   - Army
   - 
-  - 
+  - MiniMap
   - 
   - 
   - 

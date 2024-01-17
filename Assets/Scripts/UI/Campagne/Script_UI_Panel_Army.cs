@@ -2,9 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Script_UI_InGame : MonoBehaviour
+public class Script_UI_Panel_Army : MonoBehaviour
 {
-    
+    public GameObject Army;
+
+    public GameObject Image;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -17,4 +20,10 @@ public class Script_UI_InGame : MonoBehaviour
         
     }
 
+    public void onClickSelect()
+    {
+        print(Army.name);
+
+       
+    }
 }

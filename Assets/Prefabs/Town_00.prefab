@@ -362,7 +362,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb5f5d79da5c34648956979b01ce0549, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  imageUI: {fileID: 0}
+  selectedEffect: {fileID: 8989148946405699044}
+  Prefab_UI_Panel_Town: {fileID: 4916778481803683578, guid: d91c4580b5023f64e9ae4b5c51c898a7, type: 3}
+  UI_Panel_Town: {fileID: 0}
+  UI_HB_ListTown: {fileID: 0}
 --- !u!65 &4020265766054671427
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -650,11 +653,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: Magic shield blue
       objectReference: {fileID: 0}
+    - target: {fileID: 3260300555185400366, guid: 7e2a0888bcbf4db42a579a603da386f3, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7e2a0888bcbf4db42a579a603da386f3, type: 3}
+--- !u!1 &8989148946405699044 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3260300555185400366, guid: 7e2a0888bcbf4db42a579a603da386f3, type: 3}
+  m_PrefabInstance: {fileID: 5873033954491303882}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &9071277335052631121 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3198281342200462235, guid: 7e2a0888bcbf4db42a579a603da386f3, type: 3}

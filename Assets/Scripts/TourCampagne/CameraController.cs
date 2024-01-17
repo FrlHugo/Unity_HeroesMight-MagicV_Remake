@@ -1,215 +1,227 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using Unity.VisualScripting;
 using UnityEngine;
 using static UnityEditor.PlayerSettings;
 
 public class CameraController : MonoBehaviour
 {
-    [Header("Camera Settings")]
+    [Space(0)]    
+    [Header("Camera Settings")]    
     [Space(10)]
 
-    public float cameraSpeed = 20f;
-    public float mouseMouvementBorderthickness = 10f;
-    public Vector2 distanceLimit;
-    public float scrollSpeed;
+    [SerializeField] private float cameraSpeed = 1f;
+    public GameObject playerCamera;
 
+    [Space(0)]    
+    [Header("Keyboard Movement")]    
     [Space(5)]
-    public float cameraRotationSpeed;
-    public float cameraRotationXMin = 20f;
-    public float cameraRotationXMax = 70f;
 
-    private int width = Screen.width; // largeur
-    private int height = Screen.height; // hauteur
+    [SerializeField] private Vector3 vectorMoveInput;
+    [SerializeField] private Vector3 vectorMoveInputM;
+    [SerializeField] private Vector2 cameraBorderKeyboard = new Vector2(100f, 100f);
 
-    public int heightBoundary = 5;
-    public int widthBoundary = 5;
+    [Space(10)]    
+    [Header("Mouse Mouvement")]    
+    [Space(5)]
 
-    public bool isFollowing = false;
-    public bool isMovingTo = false;
+    [SerializeField] private float mouseMouvementBorderthickness = 10f;
+    [SerializeField] private float cameraMovementSmoothing = 5f;
 
-    [Header("Spring Arm")]
-    public GameObject springArm;
-    public float springArmLenght = 10;
-    public float springArmLenghtMin = 2;
-    public float springArmLenghtMax = 15;
+    [Space(10)]    
+    [Header("Mouse Rotation")]    
+    [Space(5)]
+
+    [SerializeField] private float targetSpringArmAngleX;
+    [SerializeField] private float targetCameraAngleY;
+    [SerializeField] private float currentSpringArmAngleX;
+    [SerializeField] private float currentCameraAngleY;
+
+    [SerializeField] private float cameraRotationSpeed;
+    [SerializeField] private float cameraRotationXMin = 20f;
+    [SerializeField] private float cameraRotationXMax = 70f;
+
+    [SerializeField] private int width = Screen.width; // largeur
+    [SerializeField] private int height = Screen.height; // hauteur
+    [SerializeField] private int heightBoundary = 5;
+    [SerializeField] private int widthBoundary = 5;
+
+    [Space(10)]    
+    [Header("Spring Arm Zoom")]    
+    [Space(5)]
+
+    [SerializeField] private GameObject springArm;
+    [SerializeField] private float springArmLenght = 10;
+    [SerializeField] private float zoomInput;
+    [SerializeField] private float springArmLenghtMin = 2;
+    [SerializeField] private float springArmLenghtMax = 15;
 
     private float zoomSpeed = 200f;
+    float xM = 0;
+    float zM = 0f;
 
-    float rotationX;
-    float rotationY;
+    private void Awake()
+    {
+        //rotation right and left camera with player
+        targetCameraAngleY = transform.eulerAngles.y;
+        currentCameraAngleY = targetCameraAngleY;
 
-    public GameObject followTarget;
-    public GameObject destination;
+        //rotation up and down with the spring arm
+        targetSpringArmAngleX = springArm.transform.eulerAngles.x;
+        currentSpringArmAngleX = targetSpringArmAngleX;
 
-    public Vector3 velocity;
-    /// <summary>
-    /// TODO : FINIR le deplacement de la camera ( follow + moving to)
-    /// </summary>
+        width = Screen.width; // largeur
+        height = Screen.height; // hauteur
+    }
 
     // Start is called before the first frame update
     void Start()
     {
-        Cursor.lockState = CursorLockMode.None;
-        rotationX = springArm.transform.localRotation.x;
-        rotationY = springArm.transform.localRotation.y;
 
     }
 
     // Update is called once per frame
     void Update()
     {
-        /* if right click is down
-        *  we rotate the spring arm to rotate the camera around with the mouse control  
-        */
-        if(isFollowing && followTarget != null )
-        {   
-            CameraFollow(followTarget);
-        }
-        else if (isMovingTo && destination != null)
-        {
-            MovingCameraTo(destination.transform.position);
-        }
-        else
-        {
-            CameraMovingOrRotating();
-        }
-        CameraZoomWheel();
+        
+        HandleKeyboardInput();
+        CameraMoveKeyboard();
 
-        if(Input.GetKeyDown(KeyCode.Space))
-        {
-            StartMovingTo();
-        }
+        HandleKeyboardRotationInput();
+        CameraRotationY();
 
+        HandleZoomInput();
+        CameraZoom();
+        
+        CameraMoveMouse();
+
+        
     }
 
     /// <summary>
-    /// function than manage the camera between moving and turning around when the mouse's wheel is clicked
+    /// function than handle the keyboard input for the camera movement
     /// </summary>
-    public void CameraMovingOrRotating()
+    private void HandleKeyboardInput()
     {
-        if (Input.GetKey(KeyCode.Mouse3))
-        {
-            Cursor.lockState = CursorLockMode.Locked;
-            CameraRotationMouse();
-        }
-        else
-        {
-            Cursor.lockState = CursorLockMode.None;
-            CameraMoveKeyboard();
-            CameraMoveMouse();
-        }
-    }
+ 
+        float x = Input.GetAxis("Horizontal");
+        float z = Input.GetAxis("Vertical");
 
+        Vector3 right = transform.right * x;
+        Vector3 forward = transform.forward * z;
+
+        vectorMoveInput = (forward + right).normalized;
+    }
 
     /// <summary>
     /// Camera Mouvement with the keyboard
     /// </summary>
     public void CameraMoveKeyboard()
     {
-        Vector3 pos = springArm.transform.position;
+        Vector3 nextPosition = transform.position;
+        nextPosition = transform.position + vectorMoveInput * cameraSpeed * Time.deltaTime;
 
-        pos.z += Input.GetAxis("Vertical") * cameraSpeed * Time.deltaTime;
-        pos.x += Input.GetAxis("Horizontal") * cameraSpeed * Time.deltaTime;
-
-
-        springArm.transform.position = pos;
+        transform.position = Vector3.Lerp(transform.position, nextPosition, cameraMovementSmoothing);
 
     }
+
+    /// <summary>
+    /// function than handle the keyboard rotation input
+    /// </summary>
+    private void HandleKeyboardRotationInput()
+    {
+        if (!Input.GetMouseButton(2))
+        {
+
+            targetCameraAngleY += Input.GetAxisRaw("CameraRotationXAxis") * cameraRotationSpeed * Time.deltaTime;
+
+            targetSpringArmAngleX += Input.GetAxisRaw("CameraRotationYAxis") * cameraRotationSpeed * Time.deltaTime;
+
+            targetSpringArmAngleX = Mathf.Clamp(targetSpringArmAngleX, cameraRotationXMin, cameraRotationXMax);
+
+            Cursor.lockState = CursorLockMode.None;
+            return;
+        }
+        Cursor.lockState = CursorLockMode.Locked;
+
+        targetCameraAngleY += Input.GetAxisRaw("Mouse X") * cameraRotationSpeed * Time.deltaTime;
+
+        targetSpringArmAngleX += Input.GetAxisRaw("Mouse Y") * cameraRotationSpeed * Time.deltaTime;
+
+        targetSpringArmAngleX = Mathf.Clamp(targetSpringArmAngleX, cameraRotationXMin, cameraRotationXMax);
+    }
+
+    /// <summary>
+    /// rotate the camera on two axis
+    /// </summary>
+    private void CameraRotationY()
+    {
+        //player rotation
+        currentCameraAngleY = targetCameraAngleY;
+        transform.rotation = Quaternion.Euler(0, currentCameraAngleY, 0);
+
+        //spring arm rotation
+        currentSpringArmAngleX = targetSpringArmAngleX;
+        springArm.transform.localRotation = Quaternion.Euler(currentSpringArmAngleX, 0, 0);
+    }
+
+    private void HandleZoomInput()
+    {
+        zoomInput = Input.GetAxisRaw("Mouse ScrollWheel");
+    }
+
+    private void CameraZoom()
+    {
+        springArmLenght += zoomInput * zoomSpeed * Time.deltaTime;
+
+        springArmLenght = Mathf.Clamp(springArmLenght, springArmLenghtMin, springArmLenghtMax);
+
+        playerCamera.transform.localPosition = new Vector3(0, 0, - springArmLenght);
+
+    }
+
+
     /// <summary>
     /// Camera Mouvement with the mouse and the screen size 
     /// </summary>
     public void CameraMoveMouse()
     {
+        xM += Input.GetAxisRaw("Mouse X"); 
+        zM += Input.GetAxis("Mouse Y"); 
 
-        Vector3 pos = springArm.transform.position;
-        if (Input.mousePosition.x > width - widthBoundary) 
+        if (Input.mousePosition.x > width - widthBoundary || Input.mousePosition.x < widthBoundary) 
         {
-            pos.x += cameraSpeed * Time.deltaTime;
+            
         }
-        if(Input.mousePosition.x < widthBoundary)
+        else
         {
-            pos.x -= cameraSpeed * Time.deltaTime;
-        }
-        if (Input.mousePosition.y > height - heightBoundary)
-        {
-            pos.z += cameraSpeed * Time.deltaTime;
-        }
-        if (Input.mousePosition.y < heightBoundary)
-        {
-            pos.z -= cameraSpeed * Time.deltaTime;
+            xM = 0; 
         }
 
-        springArm.transform.position = pos;
+        if (Input.mousePosition.y > height - heightBoundary || Input.mousePosition.y < heightBoundary )
+        {
+     
+        }
+        else
+        {
+            zM = 0;
+        }
+
+        Vector3 rightM = transform.right * xM;
+        Vector3 forwardM = transform.forward * zM;
+
+        vectorMoveInputM = (forwardM + rightM).normalized;
+
+        Vector3 nextPositionM = transform.position;
+
+        nextPositionM = transform.position + vectorMoveInputM * cameraSpeed * Time.deltaTime;
+
+        transform.position = Vector3.Lerp(transform.position, nextPositionM, cameraMovementSmoothing);
 
     }
 
-    /// <summary>
-    /// Rotate the camera with the mouse axis when mouse  is pressed 
-    /// </summary>
-    public void CameraRotationMouse()
-    {
-        rotationX += Input.GetAxisRaw("Mouse Y") * cameraRotationSpeed * Time.deltaTime;
-    
-        rotationY -= Input.GetAxisRaw("Mouse X") * cameraRotationSpeed * Time.deltaTime;
-   
-        rotationX = Mathf.Clamp(rotationX, cameraRotationXMin, cameraRotationXMax);
-
-        // Set the rotation to new rotation
-        springArm.transform.localRotation = Quaternion.Euler(rotationX, rotationY, 0f);
-    }
-
-    /// <summary>
-    /// Camera zooming with the mouse wheel
-    /// </summary>
-    public void CameraZoomWheel()
-    {
-
-        float scroll = Input.GetAxis("Mouse ScrollWheel");
-        springArmLenght += scroll * Time.deltaTime * zoomSpeed;
-        springArmLenght = Mathf.Clamp(springArmLenght, springArmLenghtMin, springArmLenghtMax);
-
-        gameObject.transform.localPosition = new Vector3(0, 0, -springArmLenght);
-    }
-
-    /// <summary>
-    /// Move the camera to a certain destination like a city or an army selected by the UI
-    /// </summary>
-    /// <param name="destination"></param>
-    public void MovingCameraTo(Vector3 destination)
-    {
-        //springArm.GetComponent<Rigidbody>().MovePosition(destination);
-    
-        springArm.transform.position = Vector3.SmoothDamp(springArm.transform.position, destination, ref velocity, cameraSpeed);
-
-    }
-
-    public void StartMovingTo()
-    {
-        isMovingTo = true;
-    }
-
-    public void EndMovingTo()
-    {
-        isMovingTo = false;
-        destination = null;
-    }
 
 
-    public void StartFollowing()
-    {
-        isFollowing = true;
 
-    }
-
-    public void StopFollowing()
-    {
-        isFollowing = false;
-        followTarget = null;
-
-    }
-    public void CameraFollow(GameObject target)
-    {
-        springArm.transform.position = target.transform.position;
-    }
 }
